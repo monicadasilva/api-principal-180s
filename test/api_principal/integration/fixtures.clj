@@ -1,5 +1,7 @@
 (ns api-principal.integration.fixtures
   (:require [next.jdbc :as jdbc]
+            [ring.mock.request :as mock]
+            [muuntaja.core :as m]
             [api-principal.adapters.outbound.db.repository :as db]
             [api-principal.adapters.inbound.http.routes :as routes]))
 
@@ -41,6 +43,25 @@
 (defn test-app []
   (routes/build {:repo    (db/make @datasource)
                  :insurer (make-mock-insurer)}))
+
+(defn parse-body [response]
+  (m/decode "application/json" (:body response)))
+
+(defn json-request [method path body]
+  (-> (mock/request method path)
+      (mock/json-body body)))
+
+(defn authed-json-request [method path api-key body]
+  (-> (mock/request method path)
+      (mock/header "authorization" (str "Bearer " api-key))
+      (mock/json-body body)))
+
+(defn authed-request [method path api-key]
+  (-> (mock/request method path)
+      (mock/header "authorization" (str "Bearer " api-key))))
+
+(defn create-partner! [app name cnpj]
+  (parse-body (app (json-request :post "/partners" {:name name :cnpj cnpj}))))
 
 (defn clean-db [test-fn]
   (jdbc/execute! @datasource ["DELETE FROM policies"])

@@ -41,8 +41,10 @@
     {:data {:muuntaja   m/instance
             :coercion   malli/coercion
             :middleware [#(middleware/wrap-deps % deps)
+                         middleware/wrap-logging
                          muuntaja/format-middleware
                          middleware/exception-middleware
                          coercion/coerce-request-middleware
+                         middleware/wrap-partner-auth
                          coercion/coerce-response-middleware]}})
    (ring/create-default-handler)))

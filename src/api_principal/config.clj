@@ -3,6 +3,8 @@
   (:require [integrant.core :as ig]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [taoensso.telemere :as log]
+            [api-principal.infrastructure.logging :as logging]
             [api-principal.infrastructure.db]
             [api-principal.infrastructure.repository]
             [api-principal.infrastructure.http-client]
@@ -20,11 +22,12 @@
       r)))
 
 (defn -main [& _]
-  (println "Starting API Principal...")
+  (logging/setup!)
+  (log/info "Starting API Principal...")
   (let [config (load-config)
         _      (ig/load-namespaces config)
         system (ig/init config)]
     (.addShutdownHook (Runtime/getRuntime)
                       (Thread. #(ig/halt! system)))
-    (println "API Principal started.")
+    (log/info "API Principal started.")
     @(promise)))

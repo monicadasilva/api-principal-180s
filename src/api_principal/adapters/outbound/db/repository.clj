@@ -5,6 +5,7 @@
 
 (defn make [datasource]
   {:save-partner! #(partner-repo/save-partner! datasource %)
+   :find-partner  #(partner-repo/find-partner datasource %)
    :save-quote!   #(quote-repo/save-quote! datasource %)
    :find-quote    #(quote-repo/find-quote datasource %)
    :save-policy!  #(policy-repo/save-policy! datasource %)})

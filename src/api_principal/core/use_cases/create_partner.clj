@@ -2,6 +2,8 @@
   (:require [api-principal.core.domain.partner :as partner]))
 
 (defn execute [{:keys [save-partner!]} {:keys [name cnpj]}]
-  (let [partner (partner/build name cnpj)]
-    (save-partner! partner)
-    {:status 201 :body partner}))
+  (if-not (partner/valid-cnpj? cnpj)
+    {:status 422 :body {:error "Invalid CNPJ"}}
+    (let [p (partner/build name cnpj)]
+      (save-partner! p)
+      {:status 201 :body p})))
