@@ -1,12 +1,23 @@
 (ns api-principal.config
   (:gen-class)
   (:require [integrant.core :as ig]
-            [aero.core :as aero]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [api-principal.infrastructure.db]
+            [api-principal.infrastructure.repository]
+            [api-principal.infrastructure.http-client]
+            [api-principal.infrastructure.insurance]
             [api-principal.infrastructure.http-server]))
 
 (defn load-config []
-  (aero/read-config (io/resource "system.edn")))
+  (with-open [r (-> (io/resource "system.edn")
+                    io/reader
+                    java.io.PushbackReader.)]
+    (edn/read
+      {:readers {'ig/ref ig/ref
+                 'env    #(System/getenv (name %))
+                 'long   #(Long/parseLong %)}}
+      r)))
 
 (defn -main [& _]
   (println "Starting API Principal...")
