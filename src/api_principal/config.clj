@@ -23,11 +23,11 @@
 
 (defn -main [& _]
   (logging/setup!)
-  (log/info "Starting API Principal...")
+  (log/log! :info "Starting API Principal...")
   (let [config (load-config)
         _      (ig/load-namespaces config)
         system (ig/init config)]
     (.addShutdownHook (Runtime/getRuntime)
                       (Thread. #(ig/halt! system)))
-    (log/info "API Principal started.")
+    (log/log! :info "API Principal started.")
     @(promise)))

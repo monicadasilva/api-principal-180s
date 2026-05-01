@@ -1,7 +1,8 @@
 (ns api-principal.adapters.outbound.db.partner-repo
   (:require [next.jdbc :as jdbc]
             [next.jdbc.result-set :as rs]
-            [honey.sql :as sql]))
+            [honey.sql :as sql]
+            [taoensso.telemere :as t]))
 
 (defn save-partner! [datasource partner]
   (try
@@ -12,7 +13,8 @@
     (catch org.postgresql.util.PSQLException e
       (if (= "23505" (.getSQLState e))
         (throw (ex-info "cnpj already exists" {:type :error/conflict :field "cnpj"}))
-        (throw e)))))
+        (do (t/error! ::db-error e)
+            (throw e))))))
 
 (defn find-partner [datasource partner-id]
   (jdbc/execute-one! datasource

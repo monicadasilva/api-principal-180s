@@ -1,13 +1,14 @@
 (ns api-principal.adapters.outbound.insurer.client
   (:require [hato.client :as http]
             [clojure.core.memoize :as memo]
+            [taoensso.telemere :as t]
             [api-principal.adapters.outbound.insurer.auth :as auth]))
 
 (defn- auth-header [token]
   {"Authorization" (str "Bearer " token)})
 
 (defn- with-retry [f get-token! retries base-ms]
-  (let [result (try (f) (catch Exception _ {:status 500}))]
+  (let [result (try (f) (catch Exception e (t/error! ::insurer-error e) {:status 500}))]
     (cond
       (= 401 (:status result))
       (do (memo/memo-clear! get-token!)
