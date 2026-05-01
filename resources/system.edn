@@ -1,6 +1,8 @@
 {:db/pool             {:jdbc-url #env DATABASE_URL}
 
- :adapter/repository  {:datasource #ig/ref :db/pool}
+ :db/migrations       {:datasource #ig/ref :db/pool}
+
+ :adapter/repository  {:datasource #ig/ref :db/migrations}
 
  :http/client         {}
 

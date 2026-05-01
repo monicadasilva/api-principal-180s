@@ -6,6 +6,7 @@
             [taoensso.telemere :as log]
             [api-principal.infrastructure.logging :as logging]
             [api-principal.infrastructure.db]
+            [api-principal.infrastructure.migrations]
             [api-principal.infrastructure.repository]
             [api-principal.infrastructure.http-client]
             [api-principal.infrastructure.insurance]
