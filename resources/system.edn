@@ -1,1 +1,13 @@
-{:http/server {:port #long #env HTTP_PORT}}
+{:db/pool             {:jdbc-url #env DATABASE_URL}
+
+ :adapter/repository  {:datasource #ig/ref :db/pool}
+
+ :http/client         {}
+
+ :adapter/insurance   {:base-url    #env INSURANCE_BASE_URL
+                       :api-key     #env INSURANCE_API_KEY
+                       :http-client #ig/ref :http/client}
+
+ :http/server         {:port    #long #env HTTP_PORT
+                       :repo    #ig/ref :adapter/repository
+                       :insurer #ig/ref :adapter/insurance}}

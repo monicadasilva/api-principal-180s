@@ -1,6 +1,8 @@
 services:
   db:
     image: postgres:16-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: api_principal
       POSTGRES_USER: postgres
@@ -32,3 +34,30 @@ services:
         condition: service_healthy
       insurance-api:
         condition: service_started
+    profiles:
+      - prod
+
+  api-dev:
+    image: clojure:temurin-21-tools-deps
+    working_dir: /app
+    command: clojure -M -m api-principal.config
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - clojure-cache:/root/.m2
+    environment:
+      HTTP_PORT:          ${HTTP_PORT}
+      DATABASE_URL:       ${DATABASE_URL}
+      INSURANCE_BASE_URL: ${INSURANCE_BASE_URL}
+      INSURANCE_API_KEY:  ${INSURANCE_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      insurance-api:
+        condition: service_started
+    profiles:
+      - dev
+
+volumes:
+  clojure-cache:
