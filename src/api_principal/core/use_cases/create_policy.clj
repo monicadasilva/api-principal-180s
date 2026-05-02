@@ -42,6 +42,6 @@
       :else
       (let [result (create-policy! quotation-id name gender date-of-birth)]
         (when (= 200 (:status result))
-          (persist-or-enqueue! repo {:id         (java.util.UUID/fromString (-> result :body :id))
+          (persist-or-enqueue! repo {:id         (-> result :body :id)
                                      :partner-id partner-id}))
         result))))

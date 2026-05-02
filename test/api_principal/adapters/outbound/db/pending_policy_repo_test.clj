@@ -1,6 +1,5 @@
 (ns api-principal.adapters.outbound.db.pending-policy-repo-test
   (:require [clojure.test :refer [deftest is testing use-fixtures]]
-            [next.jdbc :as jdbc]
             [api-principal.adapters.outbound.db.pending-policy-repo :as repo]
             [api-principal.integration.fixtures :as f]))
 

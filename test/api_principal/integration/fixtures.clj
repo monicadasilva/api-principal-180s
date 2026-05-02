@@ -33,8 +33,8 @@
 
      :create-policy!
      (fn [quotation-id name gender date-of-birth]
-       (let [policy-id (str (random-uuid))]
-         (swap! store assoc policy-id (str quotation-id))
+       (let [policy-id (random-uuid)]
+         (swap! store assoc (str policy-id) (str quotation-id))
          {:status 200
           :body   {:id            policy-id
                    :quotation_id  (str quotation-id)

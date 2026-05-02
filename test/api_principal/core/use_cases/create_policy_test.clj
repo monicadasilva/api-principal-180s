@@ -9,7 +9,7 @@
     (t/with-min-level :fatal (run-tests))))
 
 (def ^:private partner-id (random-uuid))
-(def ^:private policy-id  "fd3261bc-9e3c-4d4e-acae-8c4d5dc60b79")
+(def ^:private policy-id (java.util.UUID/fromString "fd3261bc-9e3c-4d4e-acae-8c4d5dc60b79"))
 (def ^:private quote-id   (random-uuid))
 
 (defn- valid-quote []
@@ -88,7 +88,7 @@
                                      partner-id quote-id "João" "f" "1996-03-15")]
     (testing "returns insurer 200 and saves policy with UUID id"
       (is (= 200 (:status res)))
-      (is (= (java.util.UUID/fromString policy-id) (:id @saved)))
+      (is (= policy-id (:id @saved)))
       (is (= partner-id (:partner-id @saved))))))
 
 (deftest save-fails-falls-back-to-enqueue
@@ -99,7 +99,7 @@
           res      (create-policy/execute repo (ok-insurer)
                                           partner-id quote-id "João" "f" "1996-03-15")]
       (is (= 200 (:status res)))
-      (is (= (java.util.UUID/fromString policy-id) (:policy-id @enqueued)))
+      (is (= policy-id (:policy-id @enqueued)))
       (is (= partner-id (:partner-id @enqueued)))
       (is (= "db down" (:error @enqueued))))))
 
