@@ -1,5 +1,6 @@
 (ns api-principal.adapters.outbound.db.repository
-  (:require [api-principal.adapters.outbound.db.partner-repo         :as partner-repo]
+  (:require [next.jdbc :as jdbc]
+            [api-principal.adapters.outbound.db.partner-repo         :as partner-repo]
             [api-principal.adapters.outbound.db.quote-repo           :as quote-repo]
             [api-principal.adapters.outbound.db.policy-repo          :as policy-repo]
             [api-principal.adapters.outbound.db.pending-policy-repo  :as pending-policy-repo]))
@@ -14,4 +15,5 @@
    :enqueue-pending-policy! #(pending-policy-repo/enqueue! datasource %)
    :list-pending-policies   #(pending-policy-repo/list-all datasource)
    :delete-pending-policy!  #(pending-policy-repo/delete! datasource %)
-   :record-pending-failure! #(pending-policy-repo/record-failure! datasource %1 %2)})
+   :record-pending-failure! #(pending-policy-repo/record-failure! datasource %1 %2)
+   :db-health               #(jdbc/execute-one! datasource ["SELECT 1"])})

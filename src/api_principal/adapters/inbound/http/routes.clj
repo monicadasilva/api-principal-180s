@@ -22,6 +22,11 @@
    (ring/router
     [["/version"
       {:get (fn [_] {:status 200 :body {:resp "API Principal 180s v1.0"}})}]
+     ["/health"
+      {:get (fn [{:keys [repo]}]
+              (let [db-ok? (try ((:db-health repo)) true (catch Exception _ false))]
+                {:status (if db-ok? 200 503)
+                 :body   {:db (if db-ok? "up" "down")}}))}]
      ["/partners"
       {:post {:parameters {:body [:map
                                   [:name :string]

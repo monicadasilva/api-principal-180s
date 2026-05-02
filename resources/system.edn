@@ -1,4 +1,5 @@
-{:db/pool             {:jdbc-url #env DATABASE_URL}
+{:db/pool             {:jdbc-url  #env DATABASE_URL
+                       :pool-size 10}
 
  :db/migrations       {:datasource #ig/ref :db/pool}
 
