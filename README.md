@@ -1,4 +1,4 @@
-# API Principal 180 Seguros
+# Main API 180 Seguros
 
 > [🇺🇸 Read this in English](README.en.md)
 
@@ -25,7 +25,7 @@ cp .env.example .env
 
 | Variável             | Descrição                        | Exemplo                                                                   |
 | -------------------- | -------------------------------- | ------------------------------------------------------------------------- |
-| `HTTP_PORT`          | Porta da API Principal           | `3000`                                                                    |
+| `HTTP_PORT`          | Porta da Main API                | `3000`                                                                    |
 | `DATABASE_URL`       | URL de conexão com o PostgreSQL  | `jdbc:postgresql://db:5432/api_principal?user=postgres&password=postgres` |
 | `INSURANCE_BASE_URL` | URL base da API Seguradora       | `http://insurance-api:5000`                                               |
 | `INSURANCE_API_KEY`  | Chave de acesso à API Seguradora | ``                                                                        |
@@ -55,6 +55,13 @@ Para adicionar uma nova migration, basta criar o próximo arquivo na sequência 
 ## Postman
 
 A collection com todos os endpoints está em [`docs/postman/`](docs/postman/). Importe o arquivo `.json` diretamente no Postman ou no Insomnia.
+
+## Swagger UI
+
+Com a API rodando, acesse:
+
+- **UI interativa:** `http://localhost:3000/api-docs/index.html`
+- **Spec JSON:** `http://localhost:3000/swagger.json`
 
 ## Como testar
 
@@ -246,7 +253,7 @@ src/api_principal/
 
 | Tabela     | Colunas principais                              | Responsabilidade                               |
 | ---------- | ----------------------------------------------- | ---------------------------------------------- |
-| `partners` | `id, name, cnpj, api_key_hash, created_at`      | Entidade exclusiva da API Principal            |
+| `partners` | `id, name, cnpj, api_key_hash, created_at`      | Entidade exclusiva da Main API                 |
 | `quotes`   | `id, partner_id, age, gender, price, expire_at` | Persistida localmente (seguradora não tem GET) |
 | `policies` | `id, partner_id, created_at`                    | Vínculo local; seguradora é source of truth    |
 

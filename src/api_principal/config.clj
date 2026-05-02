@@ -18,18 +18,18 @@
                     io/reader
                     java.io.PushbackReader.)]
     (edn/read
-      {:readers {'ig/ref ig/ref
-                 'env    #(System/getenv (name %))
-                 'long   #(Long/parseLong %)}}
-      r)))
+     {:readers {'ig/ref ig/ref
+                'env    #(System/getenv (name %))
+                'long   #(Long/parseLong %)}}
+     r)))
 
 (defn -main [& _]
   (logging/setup!)
-  (log/log! :info "Starting API Principal...")
+  (log/log! :info "Starting Main API...")
   (let [config (load-config)
         _      (ig/load-namespaces config)
         system (ig/init config)]
     (.addShutdownHook (Runtime/getRuntime)
                       (Thread. #(ig/halt! system)))
-    (log/log! :info "API Principal started.")
+    (log/log! :info "Main API started.")
     @(promise)))

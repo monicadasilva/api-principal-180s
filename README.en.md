@@ -1,4 +1,4 @@
-# API Principal 180 Insurance
+# Main API 180 Insurance
 
 > [🇧🇷 Leia em Português](README.md)
 
@@ -25,7 +25,7 @@ cp .env.example .env
 
 | Variable             | Description               | Example                                                                   |
 | -------------------- | ------------------------- | ------------------------------------------------------------------------- |
-| `HTTP_PORT`          | API Principal port        | `3000`                                                                    |
+| `HTTP_PORT`          | Main API port             | `3000`                                                                    |
 | `DATABASE_URL`       | PostgreSQL connection URL | `jdbc:postgresql://db:5432/api_principal?user=postgres&password=postgres` |
 | `INSURANCE_BASE_URL` | Insurer API base URL      | `http://insurance-api:5000`                                               |
 | `INSURANCE_API_KEY`  | Insurer API access key    | ``                                                                        |
@@ -55,6 +55,13 @@ To add a new migration, create the next file in sequence the system applies only
 ## Postman
 
 The collection with all endpoints is in [`docs/postman/`](docs/postman/). Import the `.json` file directly into Postman or Insomnia.
+
+## Swagger UI
+
+With the API running, access:
+
+- **Interactive UI:** `http://localhost:3000/api-docs/index.html`
+- **JSON spec:** `http://localhost:3000/swagger.json`
 
 ## How to test
 
@@ -246,7 +253,7 @@ src/api_principal/
 
 | Table      | Main columns                                    | Responsibility                         |
 | ---------- | ----------------------------------------------- | -------------------------------------- |
-| `partners` | `id, name, cnpj, api_key_hash, created_at`      | Entity exclusive to API Principal      |
+| `partners` | `id, name, cnpj, api_key_hash, created_at`      | Entity exclusive to Main API           |
 | `quotes`   | `id, partner_id, age, gender, price, expire_at` | Persisted locally (insurer has no GET) |
 | `policies` | `id, partner_id, created_at`                    | Local link; insurer is source of truth |
 
