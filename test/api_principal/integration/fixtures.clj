@@ -2,6 +2,8 @@
   (:require [next.jdbc :as jdbc]
             [ring.mock.request :as mock]
             [muuntaja.core :as m]
+            [ragtime.jdbc :as ragtime-jdbc]
+            [ragtime.core :as ragtime]
             [api-principal.adapters.outbound.db.repository :as db]
             [api-principal.adapters.inbound.http.routes :as routes]))
 
@@ -11,6 +13,12 @@
 
 (def datasource
   (delay (jdbc/get-datasource {:jdbcUrl test-db-url})))
+
+(defonce ^:private migrated
+  (delay
+    (let [store      (ragtime-jdbc/sql-database {:datasource @datasource})
+          migrations (ragtime-jdbc/load-resources "migrations")]
+      (ragtime/migrate-all store {} migrations))))
 
 (defn make-mock-insurer []
   (let [store (atom {})]
@@ -64,6 +72,8 @@
   (parse-body (app (json-request :post "/partners" {:name name :cnpj cnpj}))))
 
 (defn clean-db [test-fn]
+  @migrated
+  (jdbc/execute! @datasource ["DELETE FROM pending_policy_saves"])
   (jdbc/execute! @datasource ["DELETE FROM policies"])
   (jdbc/execute! @datasource ["DELETE FROM quotes"])
   (jdbc/execute! @datasource ["DELETE FROM partners"])

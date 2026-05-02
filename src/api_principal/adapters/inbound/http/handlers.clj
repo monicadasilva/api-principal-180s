@@ -4,8 +4,8 @@
             [api-principal.core.use-cases.create-policy  :as create-policy]
             [api-principal.core.use-cases.fetch-policy   :as fetch-policy]))
 
-(defn create-partner [{:keys [body-params repo]}]
-  (create-partner/execute repo body-params))
+(defn create-partner [{repo :repo, {:keys [body]} :parameters}]
+  (create-partner/execute repo body))
 
 (defn create-quote [{repo :repo, {:keys [path body]} :parameters, insurer :insurer}]
   (create-quote/execute repo insurer (:partner-id path) (:age body) (:sex body)))

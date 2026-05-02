@@ -1,7 +1,26 @@
 (ns api-principal.core.use-cases.create-policy
-  (:require [api-principal.core.domain.policy :as policy]))
+  (:require [api-principal.core.domain.policy :as policy]
+            [taoensso.telemere :as t]))
 
-(defn execute [{:keys [save-policy! find-quote]} {:keys [create-policy!]}
+(defn- persist-or-enqueue! [{:keys [save-policy! enqueue-pending-policy!]} policy]
+  (try
+    (save-policy! policy)
+    (catch Exception save-ex
+      (try
+        (enqueue-pending-policy! {:policy-id  (:id policy)
+                                  :partner-id (:partner-id policy)
+                                  :error      (.getMessage save-ex)})
+        (t/log! :warn (str "Policy save deferred to retry queue: " (:id policy)))
+        (catch Exception enqueue-ex
+          (t/error! ::policy-persistence-lost
+                    (ex-info "Save and enqueue both failed"
+                             {:policy-id     (:id policy)
+                              :partner-id    (:partner-id policy)
+                              :save-error    (.getMessage save-ex)
+                              :enqueue-error (.getMessage enqueue-ex)}
+                             enqueue-ex)))))))
+
+(defn execute [{:keys [find-quote] :as repo} {:keys [create-policy!]}
                partner-id quotation-id name gender date-of-birth]
   (let [quote (find-quote quotation-id)]
     (cond
@@ -23,6 +42,6 @@
       :else
       (let [result (create-policy! quotation-id name gender date-of-birth)]
         (when (= 200 (:status result))
-          (save-policy! {:id         (java.util.UUID/fromString (-> result :body :id))
-                         :partner-id partner-id}))
+          (persist-or-enqueue! repo {:id         (-> result :body :id)
+                                     :partner-id partner-id}))
         result))))

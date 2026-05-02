@@ -12,4 +12,7 @@
 
  :http/server         {:port    #long #env HTTP_PORT
                        :repo    #ig/ref :adapter/repository
-                       :insurer #ig/ref :adapter/insurance}}
+                       :insurer #ig/ref :adapter/insurance}
+
+ :worker/policy-retry {:repo        #ig/ref :adapter/repository
+                       :interval-ms 30000}}
