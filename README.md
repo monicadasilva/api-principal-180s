@@ -311,6 +311,20 @@ Compojure é mais simples, mas sem coerção nativa de tipos. Reitit integra com
 
 next.jdbc é o wrapper JDBC moderno recomendado pela comunidade Clojure (substitui `clojure.java.jdbc`). HoneySQL representa queries como mapas Clojure - testáveis, componíveis e imunes a SQL injection por construção. A alternativa de strings SQL brutas é simples mas frágil a refatorações; um ORM seria complexidade desnecessária para três tabelas.
 
+### HikariCP
+
+Pool de conexões JDBC configurado com os seguintes parâmetros:
+
+| Parâmetro | Valor padrão | Motivo |
+|---|---|---|
+| `maximumPoolSize` | 10 | Balanceia throughput e carga no banco; configurável por env |
+| `minimumIdle` | `max(1, poolSize/5)` | Mantém conexões aquecidas sem desperdiçar recursos em baixa carga |
+| `connectionTimeout` | 30 s | Falha rápido se o banco estiver indisponível; evita enfileirar requests indefinidamente |
+| `idleTimeout` | 10 min | Recicla conexões ociosas; evita que o banco feche por inatividade |
+| `maxLifetime` | 30 min | Reciclagem periódica previne stale connections causadas por firewalls ou load balancers com timeout de longa duração |
+
+O `halt-key!` chama `.close` no `DataSource`, garantindo que o pool seja drenado antes do shutdown do servidor (ordem imposta pelo grafo de dependências do Integrant: `http/server` → `adapter/repository` → `db/pool`).
+
 ### hato
 
 hato é um wrapper fino sobre o `java.net.http.HttpClient` nativo do Java 11, sem dependência de Apache HTTPClient. O retry com backoff exponencial e a invalidação de token são implementados na camada de aplicação (`client.clj`), mantendo controle explícito do comportamento em vez de depender de configuração opaca de um cliente HTTP.
