@@ -28,7 +28,7 @@ cp .env.example .env
 | `HTTP_PORT`          | Porta da API Principal           | `3000`                                                                    |
 | `DATABASE_URL`       | URL de conexão com o PostgreSQL  | `jdbc:postgresql://db:5432/api_principal?user=postgres&password=postgres` |
 | `INSURANCE_BASE_URL` | URL base da API Seguradora       | `http://insurance-api:5000`                                               |
-| `INSURANCE_API_KEY`  | Chave de acesso à API Seguradora | ``                                                         |
+| `INSURANCE_API_KEY`  | Chave de acesso à API Seguradora | ``                                                                        |
 
 ## Como rodar
 
@@ -50,7 +50,7 @@ A API estará disponível em `http://localhost:3000`.
 
 As migrations são executadas automaticamente no startup via ragtime. Os arquivos ficam em `resources/migrations/` no formato `NNN-descricao.up.sql`.
 
-Para adicionar uma nova migration, basta criar o próximo arquivo na sequência — o sistema aplica apenas as pendentes. Rollbacks de schema são feitos via nova migration, não via down files.
+Para adicionar uma nova migration, basta criar o próximo arquivo na sequência o sistema aplica apenas as pendentes. Rollbacks de schema são feitos via nova migration, não via down files.
 
 ## Postman
 
@@ -149,7 +149,7 @@ Authorization: Bearer uuid-da-chave
 GET /health
 ```
 
-Retorna `200 {"db": "up"}` quando o pool consegue executar `SELECT 1`, ou `503 {"db": "down"}` em caso de falha. Não checa a seguradora — bater no `/api/auth` em cada probe geraria carga e latência desnecessárias; a saúde do upstream é refletida indiretamente nas respostas `502/504` dos endpoints reais.
+Retorna `200 {"db": "up"}` quando o pool consegue executar `SELECT 1`, ou `503 {"db": "down"}` em caso de falha. Não checa a seguradora bater no `/api/auth` em cada probe geraria carga e latência desnecessárias; a saúde do upstream é refletida indiretamente nas respostas `502/504` dos endpoints reais.
 
 ### Graceful shutdown
 
@@ -254,33 +254,33 @@ src/api_principal/
 
 Cada chamada passa por uma camada `attempt` que captura exceções específicas e as traduz em respostas HTTP-shaped com `:body` estruturado. O cliente nunca recebe `:status` sem `:body`:
 
-| Cenário                                | Status | Código no body          | Retry?    |
-|----------------------------------------|--------|-------------------------|-----------|
-| `200/4xx` da seguradora                | passa  | passa                   | não       |
-| `5xx` da seguradora                    | passa  | passa (ou normalizado)  | sim       |
-| `UnknownHostException` (DNS)           | 502    | `insurer_unreachable`   | sim       |
-| `ConnectException`                     | 502    | `insurer_unreachable`   | sim       |
-| `HttpTimeoutException`                 | 504    | `insurer_timeout`       | sim       |
-| Falha no `/api/auth` (token endpoint)  | 502    | `insurer_auth_failed`   | não       |
-| `Exception` genérica                   | 502    | `insurer_error`         | não       |
-| Resposta `5xx` com body vazio          | passa  | normalizado             | sim       |
+| Cenário                               | Status | Código no body         | Retry? |
+| ------------------------------------- | ------ | ---------------------- | ------ |
+| `200/4xx` da seguradora               | passa  | passa                  | não    |
+| `5xx` da seguradora                   | passa  | passa (ou normalizado) | sim    |
+| `UnknownHostException` (DNS)          | 502    | `insurer_unreachable`  | sim    |
+| `ConnectException`                    | 502    | `insurer_unreachable`  | sim    |
+| `HttpTimeoutException`                | 504    | `insurer_timeout`      | sim    |
+| Falha no `/api/auth` (token endpoint) | 502    | `insurer_auth_failed`  | não    |
+| `Exception` genérica                  | 502    | `insurer_error`        | não    |
+| Resposta `5xx` com body vazio         | passa  | normalizado            | sim    |
 
 - **Retry de transientes:** `500/502/504` com backoff exponencial (2 tentativas, base 200 ms)
 - **Token expirado (401):** invalida o cache do JWT (`memo-clear!`) e retenta uma única vez com token novo
-- **Auth falhou (`fetch-token!` lançou):** convertido em `502 insurer_auth_failed`, sem retry — refazer a chamada teria o mesmo desfecho
+- **Auth falhou (`fetch-token!` lançou):** convertido em `502 insurer_auth_failed`, sem retry refazer a chamada teria o mesmo desfecho
 
 A premissa do retry em 5xx é que **inputs já foram validados pelo Malli na borda HTTP**, então um 5xx da seguradora só pode ser instabilidade de infraestrutura, não payload malformado. Se a seguradora um dia retornar 5xx para validação semântica, o retry desperdiça duas tentativas mas não causa dano.
 
 ### Consistência local ↔ seguradora
 
-A criação de apólice é uma operação distribuída: a seguradora cria o registro e o serviço persiste o vínculo `(policy_id, partner_id)` localmente. Se o `INSERT` no Postgres falhar depois do `200` da seguradora, ficaríamos com a apólice existindo lá fora e nenhum registro local — toda futura `GET /policies/:id` retornaria `404` por falha de ownership.
+A criação de apólice é uma operação distribuída: a seguradora cria o registro e o serviço persiste o vínculo `(policy_id, partner_id)` localmente. Se o `INSERT` no Postgres falhar depois do `200` da seguradora, ficaríamos com a apólice existindo lá fora e nenhum registro local toda futura `GET /policies/:id` retornaria `404` por falha de ownership.
 
 Para evitar essa inconsistência silenciosa:
 
 1. O `INSERT` na tabela `policies` é tentado dentro de um `try`.
 2. Se falhar, a tupla `(policy_id, partner_id)` é enfileirada na tabela `pending_policy_saves` com o erro original.
 3. Um worker em background (componente Integrant `:worker/policy-retry`, intervalo 30 s) lê linhas pendentes, retenta o `INSERT`, e remove da fila quando sucede. Em caso de falha, atualiza `attempts` e `last_error` para diagnóstico.
-4. Se o próprio enqueue falhar (DB totalmente fora), um log crítico (`::policy-persistence-lost`) é emitido com todos os dados — última linha de defesa para reconciliação manual.
+4. Se o próprio enqueue falhar (DB totalmente fora), um log crítico (`::policy-persistence-lost`) é emitido com todos os dados última linha de defesa para reconciliação manual.
 
 A request original sempre retorna `200` ao cliente quando a seguradora confirma a criação, mesmo que o save local tenha sido deferido. A apólice é completamente utilizável (consultas locais via `/policies/:id` funcionam assim que o worker drena a fila).
 
