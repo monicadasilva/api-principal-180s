@@ -2,7 +2,8 @@
   (:require [clojure.string :as str]
             [malli.core :as m]
             [taoensso.telemere :as t]
-            [reitit.ring.middleware.exception :as exception]))
+            [reitit.ring.middleware.exception :as exception]
+            [api-principal.core.domain.api-key :as api-key]))
 
 (defn wrap-deps [handler deps]
   (fn [request]
@@ -20,7 +21,7 @@
       (let [token   (some-> (get-in request [:headers "authorization"])
                             (str/replace #"(?i)^bearer\s+" ""))
             partner (when token ((:find-partner repo) partner-id))]
-        (if (and partner (= token (str (:api-key partner))))
+        (if (and partner (= (api-key/digest token) (:api-key-hash partner)))
           (handler request)
           {:status 401 :body {:error "Unauthorized"}}))
       (handler request))))

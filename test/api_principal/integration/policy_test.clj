@@ -7,7 +7,7 @@
 (defn- setup-partner! [app name cnpj]
   (let [p (f/create-partner! app name cnpj)]
     {:id      (:id p)
-     :api-key (str (:api-key p))}))
+     :api-key (str (:api_key p))}))
 
 (defn- create-quote! [app {:keys [id api-key]} age sex]
   (f/parse-body (app (f/authed-json-request :post (str "/partners/" id "/quotes")

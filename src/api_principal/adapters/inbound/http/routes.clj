@@ -1,11 +1,21 @@
 (ns api-principal.adapters.inbound.http.routes
   (:require [api-principal.adapters.inbound.http.handlers :as handlers]
             [api-principal.adapters.inbound.http.middleware :as middleware]
+            [clojure.string :as str]
             [reitit.ring :as ring]
             [reitit.ring.middleware.muuntaja :as muuntaja]
             [reitit.ring.coercion :as coercion]
             [reitit.coercion.malli :as malli]
             [muuntaja.core :as m]))
+
+(defn- ->snake [k]
+  (str/replace (name k) "-" "_"))
+
+(def ^:private muuntaja-instance
+  (m/create
+   (assoc-in m/default-options
+             [:formats "application/json" :encoder-opts]
+             {:encode-key-fn ->snake})))
 
 (defn build [deps]
   (ring/ring-handler
@@ -38,7 +48,7 @@
                                  [:partner-id :uuid]
                                  [:policy-id  :uuid]]}
               :handler    handlers/get-policy}}]]
-    {:data {:muuntaja   m/instance
+    {:data {:muuntaja   muuntaja-instance
             :coercion   malli/coercion
             :middleware [#(middleware/wrap-deps % deps)
                          middleware/wrap-logging

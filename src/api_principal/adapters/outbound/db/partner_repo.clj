@@ -8,8 +8,8 @@
   (try
     (jdbc/execute-one! datasource
                        (sql/format {:insert-into :partners
-                                    :columns     [:id :name :cnpj :api-key]
-                                    :values      [[(:id partner) (:name partner) (:cnpj partner) (:api-key partner)]]}))
+                                    :columns     [:id :name :cnpj :api-key-hash]
+                                    :values      [[(:id partner) (:name partner) (:cnpj partner) (:api-key-hash partner)]]}))
     (catch org.postgresql.util.PSQLException e
       (if (= "23505" (.getSQLState e))
         (throw (ex-info "cnpj already exists" {:type :error/conflict :field "cnpj"}))

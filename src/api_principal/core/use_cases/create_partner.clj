@@ -5,5 +5,5 @@
   (if-not (partner/valid-cnpj? cnpj)
     {:status 422 :body {:error "Invalid CNPJ"}}
     (let [p (partner/build name cnpj)]
-      (save-partner! p)
-      {:status 201 :body p})))
+      (save-partner! (dissoc p :api-key))
+      {:status 201 :body (dissoc p :api-key-hash)})))

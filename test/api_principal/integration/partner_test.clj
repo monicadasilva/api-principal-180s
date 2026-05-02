@@ -11,7 +11,7 @@
       (is (= 201 (:status response)))
       (let [body (f/parse-body response)]
         (is (= "Acme" (:name body)))
-        (is (some? (:api-key body)))))))
+        (is (some? (:api_key body)))))))
 
 (deftest create-partner-duplicate-cnpj
   (let [app (f/test-app)]

@@ -7,7 +7,7 @@
 (deftest create-quote
   (let [app       (f/test-app)
         partner   (f/create-partner! app "Acme" "12345678000195")
-        api-key   (str (:api-key partner))
+        api-key   (str (:api_key partner))
         partner-id (:id partner)
         response  (app (f/authed-json-request :post (str "/partners/" partner-id "/quotes")
                                               api-key {:age 30 :sex "f"}))]
@@ -27,7 +27,7 @@
 (deftest create-quote-invalid-age
   (let [app       (f/test-app)
         partner   (f/create-partner! app "Acme" "12345678000195")
-        api-key   (str (:api-key partner))
+        api-key   (str (:api_key partner))
         partner-id (:id partner)
         response  (app (f/authed-json-request :post (str "/partners/" partner-id "/quotes")
                                               api-key {:age 100 :sex "f"}))]
@@ -37,7 +37,7 @@
 (deftest create-quote-invalid-gender
   (let [app       (f/test-app)
         partner   (f/create-partner! app "Acme" "12345678000195")
-        api-key   (str (:api-key partner))
+        api-key   (str (:api_key partner))
         partner-id (:id partner)
         response  (app (f/authed-json-request :post (str "/partners/" partner-id "/quotes")
                                               api-key {:age 30 :sex "x"}))]
@@ -47,7 +47,7 @@
 (deftest create-quote-missing-keys
   (let [app       (f/test-app)
         partner   (f/create-partner! app "Acme" "12345678000195")
-        api-key   (str (:api-key partner))
+        api-key   (str (:api_key partner))
         partner-id (:id partner)]
     (testing "returns 400 on missing age"
       (let [response (app (f/authed-json-request :post (str "/partners/" partner-id "/quotes")
