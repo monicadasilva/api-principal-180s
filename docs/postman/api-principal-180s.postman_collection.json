@@ -1,0 +1,258 @@
+{
+	"info": {
+		"_postman_id": "225adac2-4da7-46d3-8326-259bcb80aafe",
+		"name": "180s",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18248829"
+	},
+	"item": [
+		{
+			"name": "HEALTH",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/health",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PARTNERS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code >= 200 && pm.response.code <= 299) {",
+							"    const jsonData = pm.response.json();",
+							"",
+							"    pm.environment.set(\"PARTNER_ID\", jsonData.id);",
+							"    pm.environment.set(\"TOKEN\", jsonData.api_key);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function gerarCNPJ() {",
+							"    function randomiza(n) {",
+							"        return Math.floor(Math.random() * n);",
+							"    }",
+							"",
+							"    function mod(dividendo, divisor) {",
+							"        return Math.round(dividendo - (Math.floor(dividendo / divisor) * divisor));",
+							"    }",
+							"",
+							"    var n = 9;",
+							"    var n1 = randomiza(n);",
+							"    var n2 = randomiza(n);",
+							"    var n3 = randomiza(n);",
+							"    var n4 = randomiza(n);",
+							"    var n5 = randomiza(n);",
+							"    var n6 = randomiza(n);",
+							"    var n7 = randomiza(n);",
+							"    var n8 = randomiza(n);",
+							"    var n9 = 0;",
+							"    var n10 = 0;",
+							"    var n11 = 0;",
+							"    var n12 = 1;",
+							"",
+							"    var d1 = n12 * 2 + n11 * 3 + n10 * 4 + n9 * 5 + n8 * 6 + n7 * 7 + n6 * 8 + n5 * 9 + n4 * 2 + n3 * 3 + n2 * 4 + n1 * 5;",
+							"    d1 = 11 - (mod(d1, 11));",
+							"    if (d1 >= 10) d1 = 0;",
+							"",
+							"    var d2 = d1 * 2 + n12 * 3 + n11 * 4 + n10 * 5 + n9 * 6 + n8 * 7 + n7 * 8 + n6 * 9 + n5 * 2 + n4 * 3 + n3 * 4 + n2 * 5 + n1 * 6;",
+							"    d2 = 11 - (mod(d2, 11));",
+							"    if (d2 >= 10) d2 = 0;",
+							"",
+							"    return \"\" + n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9 + n10 + n11 + n12 + d1 + d2;",
+							"}",
+							"",
+							"// Define a variável de ambiente/coleção \"cnpj\"",
+							"pm.environment.set(\"RANDOM_CNPJ\", gerarCNPJ());",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Acme 1.0\",\n    \"cnpj\": \"{{RANDOM_CNPJ}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/partners",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"partners"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "QUOTES",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code >= 200 && pm.response.code <= 299) {",
+							"    const jsonData = pm.response.json();",
+							"",
+							"    pm.environment.set(\"QUOTATION_ID\", jsonData.id);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"age\": 32,\n    \"sex\": \"m\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/partners/{{PARTNER_ID}}/quotes",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"partners",
+						"{{PARTNER_ID}}",
+						"quotes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POLICIES",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code >= 200 && pm.response.code <= 299) {",
+							"    const jsonData = pm.response.json();",
+							"",
+							"    pm.environment.set(\"POLICY_ID\", jsonData.id);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"quotation_id\": \"{{QUOTATION_ID}}\",\n    \"name\": \"Julia\",\n    \"date_of_birth\": \"1994-01-15\",\n    \"sex\": \"m\"\n}\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/partners/{{PARTNER_ID}}/policies",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"partners",
+						"{{PARTNER_ID}}",
+						"policies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET POLICY",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/partners/{{PARTNER_ID}}/policies/{{POLICY_ID}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"partners",
+						"{{PARTNER_ID}}",
+						"policies",
+						"{{POLICY_ID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

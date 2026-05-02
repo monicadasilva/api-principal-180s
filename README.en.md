@@ -52,6 +52,10 @@ Migrations run automatically at startup via ragtime. Files live in `resources/mi
 
 To add a new migration, create the next file in sequence — the system applies only pending ones. Schema rollbacks are done via a new forward migration, not down files.
 
+## Postman
+
+The collection with all endpoints is in [`docs/postman/`](docs/postman/). Import the `.json` file directly into Postman or Insomnia.
+
 ## How to test
 
 Integration tests require PostgreSQL running:

@@ -52,6 +52,10 @@ As migrations são executadas automaticamente no startup via ragtime. Os arquivo
 
 Para adicionar uma nova migration, basta criar o próximo arquivo na sequência — o sistema aplica apenas as pendentes. Rollbacks de schema são feitos via nova migration, não via down files.
 
+## Postman
+
+A collection com todos os endpoints está em [`docs/postman/`](docs/postman/). Importe o arquivo `.json` diretamente no Postman ou no Insomnia.
+
 ## Como testar
 
 Os testes de integração requerem o PostgreSQL rodando:
