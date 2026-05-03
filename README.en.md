@@ -56,12 +56,12 @@ To add a new migration, create the next file in sequence the system applies only
 
 The collection with all endpoints is in [`docs/postman/`](docs/postman/). Import the `.json` file directly into Postman or Insomnia.
 
-## Swagger UI
-
-With the API running, access:
-
-- **Interactive UI:** `http://localhost:3000/api-docs/index.html`
-- **JSON spec:** `http://localhost:3000/swagger.json`
+> Or use Swagger UI
+>
+> With the API running, access:
+> 
+> - **Interactive UI:** `http://localhost:3000/api-docs/index.html`
+> - **JSON spec:** `http://localhost:3000/swagger.json`
 
 ## How to test
 
@@ -216,6 +216,10 @@ Creates a policy from a quote. Validates business rules before calling the insur
 Fetches a policy from the insurer. If it does not belong to the authenticated partner, returns `404`.
 
 **Responses:** `200` found · `401` unauthorized · `404` not found
+
+## Scalability
+
+The scaling plan with bottleneck analysis, infrastructure decisions, and evolution roadmap is in [`docs/scaling-plan.md`](docs/scaling-plan.md).
 
 ## Architecture
 

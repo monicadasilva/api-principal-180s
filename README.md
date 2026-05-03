@@ -56,12 +56,12 @@ Para adicionar uma nova migration, basta criar o próximo arquivo na sequência 
 
 A collection com todos os endpoints está em [`docs/postman/`](docs/postman/). Importe o arquivo `.json` diretamente no Postman ou no Insomnia.
 
-## Swagger UI
-
-Com a API rodando, acesse:
-
-- **UI interativa:** `http://localhost:3000/api-docs/index.html`
-- **Spec JSON:** `http://localhost:3000/swagger.json`
+> Ou use Swagger UI:
+>
+> Com a API rodando, acesse:
+>
+> - **UI interativa:** `http://localhost:3000/api-docs/index.html`
+> - **Spec JSON:** `http://localhost:3000/swagger.json`
 
 ## Como testar
 
@@ -216,6 +216,10 @@ Cria uma apólice a partir de uma cotação. Valida regras de negócio antes de 
 Busca uma apólice na seguradora. Se não pertencer ao parceiro autenticado, retorna `404`.
 
 **Respostas:** `200` encontrado · `401` não autorizado · `404` não encontrado
+
+## Escalabilidade
+
+O plano de escala com análise de gargalos, decisões de infraestrutura e roadmap de evolução está em [`docs/scaling-plan.md`](docs/scaling-plan.md).
 
 ## Arquitetura
 
