@@ -42,7 +42,7 @@
 
      ["/partners"
       {:swagger {:tags ["partners"]}
-       :post    {:summary    "Cadastrar parceiro"
+       :post    {:summary    "Register a new partner"
                  :parameters {:body [:map
                                      [:name :string]
                                      [:cnpj [:re #"^\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}$"]]]}
@@ -50,7 +50,7 @@
 
      ["/partners/:partner-id/quotes"
       {:swagger {:tags ["quotes"]}
-       :post    {:summary    "Solicitar cotação"
+       :post    {:summary    "Request a quote"
                  :parameters {:path [:map
                                      [:partner-id :uuid]]
                               :body [:map
@@ -60,7 +60,7 @@
 
      ["/partners/:partner-id/policies"
       {:swagger {:tags ["policies"]}
-       :post    {:summary    "Criar apólice"
+       :post    {:summary    "Create a policy"
                  :parameters {:path [:map
                                      [:partner-id :uuid]]
                               :body [:map
@@ -72,7 +72,7 @@
 
      ["/partners/:partner-id/policies/:policy-id"
       {:swagger {:tags ["policies"]}
-       :get     {:summary    "Consultar apólice"
+       :get     {:summary    "Consult a policy"
                  :parameters {:path [:map
                                      [:partner-id :uuid]
                                      [:policy-id  :uuid]]}
