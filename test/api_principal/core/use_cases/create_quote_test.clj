@@ -1,7 +1,6 @@
 (ns api-principal.core.use-cases.create-quote-test
   (:require [clojure.test :refer [deftest is testing]]
-            [api-principal.core.use-cases.create-quote :as create-quote])
-  (:import [java.time LocalDate]))
+            [api-principal.core.use-cases.create-quote :as create-quote]))
 
 (def ^:private partner-id (random-uuid))
 
